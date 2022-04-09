@@ -1,38 +1,43 @@
 import React, { useReducer } from 'react'
-
-const initialState = 0;
-const reducerFunction = (initialState, dispatch) => {
-        if (dispatch.type === "INCREMENT") {
-            return initialState+1;
-        } else if (dispatch.type === "DECREMENT")
-        {
-            return initialState-1;
-        }
+const initialData = [];
+const reservationHistory = (oldReservationList=initialData, action) => {
+    switch (action.type) {
+      case "NEW_BOOKING":
+        return [...oldReservationList, action.payload];
+      case "CANCEL_BOOKING" :
+        return oldReservationList.filter(record => {
+          return record !== action.payload.name;
+        })
+      default:
+        return oldReservationList;
+    }
 }
 
 const App = () => {
-    const [newState, dispatch] = useReducer(reducerFunction, initialState)
-
-    const clickHandle = () => {
-        dispatch({
-            type : "INCREMENT"
-        });
-    }
-    const clickHandle2 = () => {
-        dispatch({
-            type : "DECREMENT"
-        });
-    }
-
+  const [oldReservationList, dispatch] = useReducer(reservationHistory, initialData)
+  const newBooking = (name,amount) => {
+    dispatch({
+      type : "NEW_BOOKING",
+      payload : {
+        name,
+        amount
+      }
+    })
+  }
+  const cancelBooking = (name,RefundAmount) => {
+    dispatch({
+      type : "CANCEL_BOOKING",
+      payload : {
+        name,
+        RefundAmount
+      }
+    })
+  }
   return (
     <div>
-        <h1>
-            {initialState}
-            <br />
-            {newState}
-        </h1>
-        <button onClick={clickHandle}>Increment</button>
-        <button onClick={clickHandle2}>Decrement</button>
+      <h1>Welcome to Ticket Booking.</h1>
+      <button onClick={newBooking}>New Booking</button>
+      <button onClick={cancelBooking}>New Booking</button>
     </div>
   )
 }
